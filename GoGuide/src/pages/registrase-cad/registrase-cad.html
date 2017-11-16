@@ -1,0 +1,124 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Registro CAD</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <div>
+    <p>Registrate al CAD</p>
+    <ion-list>  
+      <p>Datos personales</p>
+      <ion-item>
+        <ion-label floating>* Nombre</ion-label>
+        <ion-input type="text" name="nombre" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Apellido</ion-label>
+        <ion-input type="text" name="apellido" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>* Género</ion-label>
+        <ion-select required>
+          <ion-option value="f">Femenino</ion-option>
+          <ion-option value="m">Masculino</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* CUIT / CUIL</ion-label>
+        <ion-input type="number" name="cuit" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>* Tipo de Documento</ion-label>
+        <ion-select required>
+          <ion-option value="DNI" >DNI</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Número de Documento</ion-label>
+        <ion-input type="number" name="nroDoc" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Email</ion-label>
+        <ion-input type="email" name="email" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Email Alt</ion-label>
+        <ion-input type="email" name="emailAlt" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Fecha de Nacimiento</ion-label>
+        <ion-input type="text" name="fNac" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Edad</ion-label>
+        <ion-input type="number" name="edad" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Teléfono</ion-label>
+        <ion-input type="text" name="tel" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Celular</ion-label>
+        <ion-input type="text" name="cel" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+      <ion-label>* Perfiles</ion-label>
+      <ion-select multiple="true" cancelText="No" okText="Listo" required>
+        <ion-option value=""></ion-option><option value="5">ESTUDIANTE PERSONAL AERONAUTICO</option>
+        <ion-option value="4">MEDICO (AME)</ion-option>
+        <ion-option value="3">PERSONAL AERONAUTICO</ion-option>
+        <ion-option value="11">PERSONAL ANAC</ion-option>
+        <ion-option value="15">PERSONAL CMAE</ion-option>
+        <ion-option value="16">VANT</ion-option>
+        <ion-option value="9">WEB SERVICE - ORGANISMOS PUBLICOS</ion-option>
+      </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Comentarios</ion-label>
+        <ion-textarea name="comentarios" clearInput="true"></ion-textarea>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <p>Domicilio</p>
+      <ion-item>
+        <p>* Provincia</p>
+        <ion-searchbar (ionInput)="filtrarProvincias($event)" required></ion-searchbar>
+      </ion-item>
+      <ion-item>
+        <p>* Localidad</p>
+        <ion-searchbar (ionInput)="filtrarProvincias($event)" required></ion-searchbar>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Calle</ion-label>
+        <ion-input type="text" name="calle" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Número</ion-label>
+        <ion-input type="text" name="nro" clearInput="true" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Piso</ion-label>
+        <ion-input type="text" name="piso" clearInput="true"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Depto</ion-label>
+        <ion-input type="text" name="depto" clearInput="true"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>* Código Postal</ion-label>
+        <ion-input type="number" name="cp" clearInput="true" required></ion-input>
+      </ion-item>
+    </ion-list>
+    <button ion-button type="submit" block full icon left (click)="registro()">
+      <ion-icon name="send"></ion-icon>
+      Registrarse al CAD
+    </button>
+  </div>  
+</ion-content>

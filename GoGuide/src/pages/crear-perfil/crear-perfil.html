@@ -1,0 +1,130 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Crear Perfil</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>  
+    <div padding>
+    <p>Los campos con * son obligatorios</p>
+    <!--<img [src]="userProfile.fotoPerfil" />  
+    <form name="myForm">-->
+      <ion-list>  
+        <p>Crear perfil</p>
+        <ion-list>
+          <ion-item>
+            <p>Foto de perfil</p>
+            <ion-avatar item-start>
+              <img [src]="userProfile.fotoPerfil">
+            </ion-avatar>
+          </ion-item>
+          <ion-item>
+            <button ion-button round outline icon-start (click)="abrirGaleria()">
+              <ion-icon name="images"></ion-icon>
+               Elegir foto
+            </button>
+            
+            <button ion-button round outline icon-start (click)="tomarFoto()">
+              <ion-icon name="camera"></ion-icon>
+               Sacar foto
+            </button>
+          </ion-item>
+        </ion-list>
+        <ion-item>
+          <ion-label floating>* Nombre de perfil</ion-label>
+          <ion-input type="text" name="perfil" clearInput="true" required [(ngModel)]="userProfile.nombreDePerfil"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>* Nombre</ion-label>
+          <ion-input type="text" name="nombre" clearInput="true" required [(ngModel)]="userProfile.nombre"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>* Apellido</ion-label>
+          <ion-input type="text" name="apellido" clearInput="true" required [(ngModel)]="userProfile.apellido"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>* Email</ion-label>
+          <ion-input type="email" name="email" clearInput="true" required [(ngModel)]="userProfile.email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>* Edad</ion-label>
+          <ion-input type="number" name="edad" clearInput="true" required [(ngModel)]="userProfile.edad" min="1" max="130"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>* Contraseña de perfil</ion-label>
+          <ion-input type="password" name="pass" clearInput="true" required [(ngModel)]="userProfile.pass"></ion-input>
+        </ion-item>
+        <div padding>
+          <button ion-button block (click)="mostrarDatosOpcionales()">Datos Opcionales</button>
+        </div>
+        <div padding *ngIf="datosOpcionales">
+          <ion-item>
+            <ion-label floating>Telefono</ion-label>
+            <ion-input type="telefono" name="telefono" clearInput="true" [(ngModel)]="userProfile.telefono"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Sexo</ion-label>
+            <ion-select [(ngModel)]="userProfile.sexo">
+              <ion-option value="M" [selected]="userProfile.sexo=='M'">Masculino</ion-option>
+              <ion-option value="F" [selected]="userProfile.sexo=='F'">Femenino</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label>Tipo Documento</ion-label>
+            <ion-select [(ngModel)]="userProfile.tipoDoc">
+              <ion-option value="1" [selected]="userProfile.tipoDoc==1">DNI</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Número Documento</ion-label>
+            <ion-input type="number" name="nroDoc" clearInput="true" [(ngModel)]="userProfile.nroDoc"></ion-input>
+          </ion-item>
+          <ion-list>
+            <p>Domicilio</p>
+            <ion-item>
+              <ion-label floating>Calle</ion-label>
+              <ion-input type="text" name="calle" clearInput="true" [(ngModel)]="userProfile.calle"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Número</ion-label>
+              <ion-input type="text" name="nro" clearInput="true" [(ngModel)]="userProfile.nro"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Piso</ion-label>
+              <ion-input type="text" name="piso" clearInput="true" [(ngModel)]="userProfile.piso"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Depto</ion-label>
+              <ion-input type="text" name="depto" clearInput="true" [(ngModel)]="userProfile.dpto"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Provincia</ion-label>
+              <ion-select *ngIf="provincias.length" [(ngModel)]="userProfile.provincia" cancelText="No" okText="Si" clearInput="true" (ionChange)="provinciaSelected($event)">
+                <ion-option *ngFor="let provincia of provincias" [value]="provincia.id_provincia" [selected]="userProfile.provincia==provincia.id_provincia">
+                  {{provincia.provincia}}
+                </ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Localidad</ion-label>
+              <ion-select *ngIf="localidades.length" [(ngModel)]="userProfile.localidad" cancelText="No" okText="Si" clearInput="true">
+                <ion-option *ngFor="let localidad of localidades" [value]="localidad.id_localidad" [selected]="userProfile.localidad==localidad.id_localidad">
+                  {{localidad.localidad}}
+                </ion-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-list> 
+      <!--<button ion-button type="submit" block full icon left (click)="registro()">-->
+      <button ion-button block full icon left (click)="registro()">
+        <ion-icon name="send"></ion-icon>
+        {{crearModificar}}
+      </button>
+    <!--</form>-->

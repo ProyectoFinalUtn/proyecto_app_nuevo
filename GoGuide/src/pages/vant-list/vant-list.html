@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Mis VANT</ion-title>
+    <ion-buttons end>
+       <button ion-button icon-only (click)="nuevoVant()">
+         <ion-icon name="add"></ion-icon>
+       </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <p>Mis VANT</p>
+    <ion-item *ngFor="let vant of vants">
+      <ion-thumbnail item-start>
+        <img [src]="vant.foto">
+      </ion-thumbnail>
+      <h2>VANT:  {{vant.vant.marca}}</h2>
+      <p><ion-col>Marca: {{vant.vant.marca}}</ion-col></p>
+      <p><ion-col>Modelo: {{vant.vant.modelo}}</ion-col></p>
+      <p><ion-col>Número de serie: {{vant.vant.nroSerie}}</ion-col></p>
+      <p><ion-col>Fabricante: {{vant.vant.fabricante}}</ion-col></p>
+      <p><ion-col>Lugar de Fabricación: {{vant.vant.lFab}}</ion-col></p>
+      <p><ion-col>Año de Fabricación: {{vant.vant.anioFab}}</ion-col></p>
+      <p><ion-col>Alto (cm): {{vant.vant.alto}}</ion-col></p>
+      <p><ion-col>Ancho (cm): {{vant.vant.ancho}}</ion-col></p>
+      <p><ion-col>Largo (cm): {{vant.vant.largo}}</ion-col></p>
+      <p><ion-col>Peso (kg): {{vant.vant.peso}}</ion-col></p>
+      <p><ion-col>Color: {{vant.vant.color}}</ion-col></p>
+      <p><ion-col>Velocidad Máxima (km/h): {{vant.vant.velMax}}</ion-col>
+      <p><ion-col>Altura Máxima (mts): {{vant.vant.altMax}}</ion-col></p>
+      <p><ion-col>Lugar de guardado: {{vant.vant.lGuardado}}</ion-col></p>
+      <p><button ion-button clear item-end (click)="vantSeleccionado(vant)">Modificar</button>
+      <button ion-button clear item-end (click)="borrarVant(vant)">Eliminar</button></p>
+    </ion-item>
+  </ion-list>
+</ion-content>

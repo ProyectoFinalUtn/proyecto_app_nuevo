@@ -1,0 +1,64 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Perfil</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <p>Cuenta</p>
+  <div padding *ngIf="!estaLogueado">
+    <div padding *ngIf="false">
+      <ion-list>
+        <ion-item>
+          <p>Ingresar a través del Casillero Aeronáutico Digital (CAD)</p>
+          <ion-label floating>Usuario CAD</ion-label>
+          <ion-input type="text" clearInput="true" required [(ngModel)]="usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label floating>Contraseña CAD</ion-label>
+          <ion-input type="password" clearInput="true" required [(ngModel)]="pass"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <div padding>
+        <button ion-button block (click)="login()">Ingresar</button>
+      </div>
+    </div>
+
+    <div padding>
+      <ion-list>
+        <ion-item>
+          <p>Ingresar</p>
+          <ion-label floating>Email</ion-label>
+          <ion-input type="email" clearInput="true" required [(ngModel)]="usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label floating>Contraseña</ion-label>
+          <ion-input type="password" clearInput="true" required [(ngModel)]="pass"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <div padding>
+        <button ion-button block (click)="loginPerfil()">Ingresar</button>
+      </div>
+    </div>
+
+    <div padding *ngIf="!panelRegistracion">
+      <p>¿Todavía no tenés tu perfil?</p>
+      <button ion-button block (click)="crearPerfil()">Crear Perfil</button>
+    </div>
+
+    <div padding *ngIf="false">
+      <p>¿Todavia no tenés usuario?</p>
+      <button ion-button block (click)="registroCad()">Registrarse</button>
+    </div>
+  </div>
+</ion-content>

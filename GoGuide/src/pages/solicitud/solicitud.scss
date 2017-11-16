@@ -1,0 +1,21 @@
+page-solicitud {
+  /*#map {
+    height: 80vh;
+    width: 80vw;
+  }*/
+
+  /*html, body {
+    height: 50vh;
+    width: 50vw;
+  }*/
+
+  #map {
+      align-content: center;
+      align-items: center;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+      padding: 0;
+      position: relative;
+  }
+}
