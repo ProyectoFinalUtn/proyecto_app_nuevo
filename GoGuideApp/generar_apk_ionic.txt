@@ -1,0 +1,45 @@
+Generar apk con ionic:
+
+1- Compílar android con ionic:
+	ionic cordova plugin rm cordova-plugin-console
+	ionic cordova platform add android --save
+	ionic cordova platform add ios --save
+	
+2- ionic cordova build --release android
+
+3- Generar key desde la carpeta de java cmd: C:\Program Files\Java\jdk1.8.0_144\bin
+	keytool -genkey -v -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore -alias GoGuide -keyalg RSA -keysize 2048 -validity 10000
+	contraseña: goguide
+4- Firmar la apk con la key generada desde la carpeta de java
+	jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk GoGuide
+
+5- Generar Apk tener sdk de android e ir a la carpeta C:\Users\UserName\AppData\Local\Android\sdk\build-tools\25.0.2:
+	zipalign -v 4 C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\GoGuide.apk
+	
+-------------------------------------------------------------------------FACEBOOK---------------------------------------------------------------------------------------------------------------------------------------------------
+Open ssl url: https://code.google.com/archive/p/openssl-for-windows/downloads
+Generar key desde la carpeta de java cmd: C:\Program Files\Java\jdk1.8.0_144\bin   
+keytool -exportcert -alias androiddebugkey -keystore %HOMEPATH%\.android\debug.keystore | "C:\Users\UserName\Desktop\Ionic\openssl\bin\openssl.exe" sha1 -binary | "C:\Users\UserName\Desktop\Ionic\openssl\bin\openssl.exe" base64
+----------------------------------------------------CREO QUE NO VA A SER NECESARIO QUE LO VOLVAMOS A HACER---------------------------------------------------------------------------------------------------------------------------
+	
+	
+	<config-file parent="/manifest" target="AndroidManifest.xml">
+            <manifest android:hardwareAccelerated="true" android:versionCode="1" android:versionName="0.0.1" package="io.ionic.starter" xmlns:android="http://schemas.android.com/apk/res/android">
+                <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true" />
+                <uses-permission android:name="android.permission.INTERNET" />
+                <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+                <uses-permission android:name="android.permission.LOCATION_HARDWARE" />
+                <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+                <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+                <application android:hardwareAccelerated="true" android:icon="@mipmap/icon" android:label="@string/app_name" android:supportsRtl="true">
+                    <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:label="@string/activity_name" android:launchMode="singleTop" android:name="MainActivity" android:theme="@android:style/Theme.DeviceDefault.NoActionBar" android:windowSoftInputMode="adjustResize">
+                        <intent-filter android:label="@string/launcher_name">
+                            <action android:name="android.intent.action.MAIN" />
+                            <category android:name="android.intent.category.LAUNCHER" />
+                        </intent-filter>
+                    </activity>
+                </application>
+                <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="25" />
+            </manifest>
+        </config-file>
+    </platform>

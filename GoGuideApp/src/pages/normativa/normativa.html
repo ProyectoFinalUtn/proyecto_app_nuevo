@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Normativa</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <p>{{normativa.descripcion}}</p>
+  <p>Fecha Desde = {{normativa.fecha_desde}}</p>
+  <p>Fecha Hasta = {{normativa.fecha_hasta}}</p>
+  <!--<div id="normativa">
+    <span class="large" [inner-html]="normativa.contenido_html"></span>
+  </div>-->
+  <span *ngIf="normativa.contenido != ''" class="large" [innerHTML]="normativa.contenido_html"></span>
+
+</ion-content>

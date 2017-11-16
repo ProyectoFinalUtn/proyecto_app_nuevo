@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Mis Solicitudes de excepción</ion-title>
+    <ion-buttons end>
+       <button ion-button icon-only (click)="nuevaSolcitud()">
+         <ion-icon name="add"></ion-icon>
+       </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <p>Mis solicitudes</p>
+    <ion-item *ngFor="let solicitud of solicitudes">      
+      <h2>Solicitud número:  {{solicitud.idSolicitud}}</h2>
+      <p><ion-col>Estado: <ion-icon [name]="getIconSolicitud(solicitud)">{{solicitud.descripcionEstadoSolicitud}}</ion-icon></ion-col></p>
+      <p><ion-col>Latitud: {{solicitud.latitud}}</ion-col></p>
+      <p><ion-col>Longitud: {{solicitud.longitud}}</ion-col></p>
+      <p><ion-col>Radio de Vuelo: {{solicitud.radioVuelo}}</ion-col></p>
+      <p><ion-col>Fecha: {{solicitud.fecha}}</ion-col></p>
+      <p><ion-col>Hora de Vuelo desde: {{solicitud.horaVueloDesde}}</ion-col></p>
+      <p><ion-col>Hora de Vuelo hasta: {{solicitud.horaVueloHasta}}</ion-col></p>
+      <p><button ion-button clear item-end (click)="modificarSelicitud(solicitud)">Modificar</button>
+      <button ion-button clear item-end (click)="eliminarSolicitud(solicitud)">Eliminar</button></p>
+    </ion-item>
+  </ion-list>
+</ion-content>
