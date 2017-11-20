@@ -19,10 +19,12 @@ export class SolicitudListPage {
   userProfile: UserProfile;
   iconSolicitud: string;
   loading;
+  esperePorFavor: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private ss: SolicitudServiceProvider, 
               private up: PerfilProvider, public alertCtrl: AlertController, 
               public loadingCtrl: LoadingController, private platform: Platform ) {
+    this.esperePorFavor = 0;
     this.solicitudes = [];
     this.iconSolicitud = 'clock';
   }
@@ -125,11 +127,14 @@ export class SolicitudListPage {
   }
 
   errorWs(err){
-    if(err.message != undefined){
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
     }
     else{
-      this.alertMensaje("Error", "Verifique su conexión a internet.");
+      this.alertMensaje("Error", "Verifique su conexión a internet");
     }
   }
 
@@ -138,6 +143,10 @@ export class SolicitudListPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -148,7 +157,11 @@ export class SolicitudListPage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   getIconSolicitud(solicitud){
@@ -166,8 +179,15 @@ export class SolicitudListPage {
 
   goToBack(){
     this.platform.registerBackButtonAction(() => {
-        this.navCtrl.setRoot(HomePage);
+      this.goToHome();
     });
+  }
+
+  goToHome(){
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.navCtrl.setRoot(HomePage);
   }
 
 }

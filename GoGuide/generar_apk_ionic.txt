@@ -1,5 +1,4 @@
 Generar apk con ionic:
-
 1- Compílar android con ionic:
 	ionic cordova plugin rm cordova-plugin-console
 	ionic cordova platform add android --save
@@ -8,13 +7,13 @@ Generar apk con ionic:
 2- ionic cordova build --release android
 
 3- Generar key desde la carpeta de java cmd: C:\Program Files\Java\jdk1.8.0_144\bin
-	keytool -genkey -v -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore -alias GoGuide -keyalg RSA -keysize 2048 -validity 10000
+	keytool -genkey -v -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app_nuevo\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore -alias GoGuide -keyalg RSA -keysize 2048 -validity 10000
 	contraseña: goguide
 4- Firmar la apk con la key generada desde la carpeta de java
-	jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk GoGuide
+	jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore C:\Users\UserName\Desktop\Ionic\proyecto_app_nuevo\GoGuide\platforms\android\build\outputs\apk\go-guide-key.keystore C:\Users\UserName\Desktop\Ionic\proyecto_app_nuevo\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk GoGuide
 
 5- Generar Apk tener sdk de android e ir a la carpeta C:\Users\UserName\AppData\Local\Android\sdk\build-tools\25.0.2:
-	zipalign -v 4 C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk C:\Users\UserName\Desktop\Ionic\proyecto_app\src\GoGuide\platforms\android\build\outputs\apk\GoGuide.apk
+	zipalign -v 4 C:\Users\UserName\Desktop\Ionic\proyecto_app_nuevo\GoGuide\platforms\android\build\outputs\apk\android-release-unsigned.apk C:\Users\UserName\Desktop\Ionic\proyecto_app_nuevo\GoGuide\platforms\android\build\outputs\apk\GoGuide.apk
 	
 -------------------------------------------------------------------------FACEBOOK---------------------------------------------------------------------------------------------------------------------------------------------------
 Open ssl url: https://code.google.com/archive/p/openssl-for-windows/downloads

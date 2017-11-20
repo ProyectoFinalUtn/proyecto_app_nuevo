@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams, AlertController, LoadingController
 import { NormativaServiceProvider, Normativa } from '../../providers/normativa-service/normativa-service';
 import { HomePage } from '../home/home';
 
-@IonicPage()
 @Component({
   selector: 'page-normativa',
   templateUrl: 'normativa.html',
@@ -12,12 +11,14 @@ export class NormativaPage {
   @ViewChild(Navbar) navBar: Navbar;
   loading;
   normativa: Normativa;
+  esperePorFavor: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
               private ns: NormativaServiceProvider, public loadingCtrl: LoadingController,
               public alertCtrl: AlertController, private platform: Platform) {
     this.normativa = new Normativa();
     this.normativa.contenido_html = "";
+    this.esperePorFavor = 0;
   }
 
   ionViewDidLoad() {
@@ -49,6 +50,10 @@ export class NormativaPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -59,7 +64,11 @@ export class NormativaPage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   alertMensaje(titulo, msg){
@@ -72,16 +81,28 @@ export class NormativaPage {
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   goToBack(){
     this.platform.registerBackButtonAction(() => {
-        this.navCtrl.setRoot(HomePage);
+      this.goToHome();
     });
+  }
+
+  goToHome(){
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.navCtrl.setRoot(HomePage);
   }
 
 }

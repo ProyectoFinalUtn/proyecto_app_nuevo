@@ -50,7 +50,7 @@
         </ion-item>
         <ion-item>
           <ion-label floating>* Email</ion-label>
-          <ion-input type="email" name="email" clearInput="true" required [(ngModel)]="userProfile.email"></ion-input>
+          <ion-input type="email" name="email" clearInput="true" required [(ngModel)]="userProfile.email" [disabled]="crearModificar=='Modificar Perfil'"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>* Edad</ion-label>
@@ -70,14 +70,14 @@
           </ion-item>
           <ion-item>
             <ion-label>Sexo</ion-label>
-            <ion-select [(ngModel)]="userProfile.sexo">
+            <ion-select [(ngModel)]="userProfile.sexo" cancelText="No" okText="Si" clearInput="true">
               <ion-option value="M" [selected]="userProfile.sexo=='M'">Masculino</ion-option>
               <ion-option value="F" [selected]="userProfile.sexo=='F'">Femenino</ion-option>
             </ion-select>
           </ion-item>
           <ion-item>
             <ion-label>Tipo Documento</ion-label>
-            <ion-select [(ngModel)]="userProfile.tipoDoc">
+            <ion-select [(ngModel)]="userProfile.tipoDoc" cancelText="No" okText="Si" clearInput="true">
               <ion-option value="1" [selected]="userProfile.tipoDoc==1">DNI</ion-option>
             </ion-select>
           </ion-item>

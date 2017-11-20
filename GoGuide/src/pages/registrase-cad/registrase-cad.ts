@@ -4,7 +4,6 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { UsuarioServiceProvider } from '../../providers/usuario-service/usuario-service';
 import { ConfigServiceProvider } from '../../providers/config-service/config-service';
 
-@IonicPage()
 @Component({
   selector: 'page-registrase-cad',
   templateUrl: 'registrase-cad.html',

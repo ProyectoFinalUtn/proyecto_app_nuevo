@@ -8,7 +8,6 @@ import { PerfilPage } from '../perfil/perfil';
 import { HomePage } from '../home/home';
 import { VantServiceProvider } from '../../providers/vant-service/vant-service';
 
-@IonicPage()
 @Component({
   selector: 'page-perfil-detalle',
   templateUrl: 'perfil-detalle.html',
@@ -20,10 +19,12 @@ export class PerfilDetallePage {
   userProfile: UserProfile;
   loading;
   veces = 0;
+  esperePorFavor: number;
   constructor(public navCtrl: NavController, public navParams: NavParams, 
               public us: UsuarioServiceProvider, public up: PerfilProvider, 
               public db: DbProvider, public alertCtrl: AlertController, private vs: VantServiceProvider,
               public loadingCtrl: LoadingController, private platform: Platform) {
+    this.esperePorFavor = 0;
     this.userProfile = this.up.getUserProfile();
     if(this.navParams.get("veces") != undefined)
       this.veces = this.navParams.data.veces;
@@ -60,7 +61,7 @@ export class PerfilDetallePage {
       this.vs.clearAllVants();
       this.irAlLogin();
     }).catch(error =>{
-      this.errorWs(error.message);
+      this.errorWs(error);
     });
   }
 
@@ -93,6 +94,10 @@ export class PerfilDetallePage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -103,7 +108,11 @@ export class PerfilDetallePage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   alertMensaje(titulo, msg){
@@ -116,10 +125,15 @@ export class PerfilDetallePage {
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   registrarLogin(userProfile: UserProfile){
@@ -137,7 +151,7 @@ export class PerfilDetallePage {
       });
     }
     catch(error){
-      alert("Se produjo un error al actualizar el usuario");
+      this.alertMensaje("Error", "Se produjo un error al actualizar el usuario");
     }
   }
 
@@ -147,7 +161,14 @@ export class PerfilDetallePage {
 
   goToBack(){
     this.platform.registerBackButtonAction(() => {
-        this.navCtrl.setRoot(HomePage);
+      this.goToHome();
     });
+  }
+
+  goToHome(){
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.navCtrl.setRoot(HomePage);
   }
 }

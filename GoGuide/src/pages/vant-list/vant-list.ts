@@ -19,10 +19,12 @@ export class VantListPage {
   logueado: boolean;
   userProfile: UserProfile;
   loading;
+  esperePorFavor: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vs: VantServiceProvider, 
               private up: PerfilProvider, private db: DbProvider, public alertCtrl: AlertController, 
               public loadingCtrl: LoadingController, private cs: ConfigServiceProvider, private platform: Platform) {
+    this.esperePorFavor = 0;
     this.vants = new Array<any>();
   }
 
@@ -55,7 +57,7 @@ export class VantListPage {
       }
     }else{
       this.alertMensaje("Error", "Debe ingresar con su perfil para acceder a esta página");
-      this.backHome();
+      this.goToHome();
     }
   }
 
@@ -72,13 +74,13 @@ export class VantListPage {
           this.hideLoad();
         }else{
           this.errorWs(res);
-          this.backHome();
+          this.goToHome();
         }
       },
       err => {       
         this.hideLoad();
         this.errorWs(err);
-        this.backHome();        
+        this.goToHome();        
       });
     });
   }
@@ -95,7 +97,7 @@ export class VantListPage {
           this.vants.push({vant: vant, foto: vantFoto})
         }); 
       }).catch(err => {
-            this.backHome();  
+          this.goToHome();  
       });
   }
 
@@ -111,10 +113,15 @@ export class VantListPage {
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   borrarVant(vant){
@@ -156,12 +163,12 @@ export class VantListPage {
         })
         .catch(error =>{
           this.hideLoad();
-          this.alertMensaje("Error", error.message);
+          this.errorWs(error);
         });
       },
       err => {
         this.hideLoad();
-        this.alertMensaje("Error", err.message);        
+        this.errorWs(err);        
       });
     });
   }
@@ -176,6 +183,11 @@ export class VantListPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
+
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -186,16 +198,23 @@ export class VantListPage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
-  }
-
-  backHome(){
-    this.navCtrl.setRoot(HomePage);
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   goToBack(){
     this.platform.registerBackButtonAction(() => {
-        this.navCtrl.setRoot(HomePage);
+      this.goToHome();
     });
+  }
+
+  goToHome(){
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.navCtrl.setRoot(HomePage);
   }
 }

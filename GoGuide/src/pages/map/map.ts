@@ -53,6 +53,7 @@ export class MapPage implements OnDestroy{
   userProfile: any;
   contadorLoad: number;
   layerGroup: L.layerGroup;
+  esperePorFavor: number;
 
   private geolocationSubscription;
 
@@ -67,6 +68,7 @@ export class MapPage implements OnDestroy{
     public up: PerfilProvider, private vs: VueloServiceProvider,
     private zs: ZonasServiceProvider, private facebook: Facebook
   ) {
+    this.esperePorFavor = 0;
     this.layers = new Array<L.tileLayer>();
     this.ocultarTodasLasOpciones();
     this.puedeVolar = true;
@@ -120,7 +122,7 @@ export class MapPage implements OnDestroy{
     this.layers.push(mapaBase);
     this.map.addLayer(mapaBase);
     /*this.controlLayer= L.control.layers(baseMaps).addTo(this.map);*/
-    this.layerNormativa = L.geoJSON().addTo(this.map);
+    //this.layerNormativa = L.geoJSON().addTo(this.map);
     //this.agregarCapa('http://geo.anac.gov.ar/geoserver/anac/wms?', 'anac:helicorredores', 'image/png'); 
   }
 
@@ -222,7 +224,7 @@ export class MapPage implements OnDestroy{
               mapPage.moverA(latlng, zoom);
           }
           mapPage.click = 0;
-        }, 1300);
+        }, 600);
       }
     });
   }
@@ -313,22 +315,22 @@ export class MapPage implements OnDestroy{
       return;
     }
     this.showLoad().then(()=>{
-    this.op.obtenerClima(this.latitudActual, this.longitudActual).then(res => {
-        var clima = res;
-        var msg = this.op.getTemplateClima(clima);
-        this.hideLoad();
-        let alert = this.alertCtrl.create({
-          title: 'El clima en ' + clima.lugar,
-          message: msg,
-          buttons: ['Listo']
-        });
-        alert.present();
-      },
-      err => {
-        this.hideLoad();
-        this.alertMensaje("Error", "El servicio de información climática no está disponible por el momento")
-      })
-    });
+      this.op.obtenerClima(this.latitudActual, this.longitudActual).then(res => {
+          var clima = res;
+          var msg = this.op.getTemplateClima(clima);
+          this.hideLoad();
+          let alert = this.alertCtrl.create({
+            title: 'El clima en ' + clima.lugar,
+            message: msg,
+            buttons: ['Listo']
+          });
+          alert.present();
+        },
+        err => {
+          this.hideLoad();
+          this.alertMensaje("Error", "El servicio de información climática no está disponible por el momento")
+        })
+      });
   }
 
   moverA(latlng, zoom){
@@ -342,16 +344,22 @@ export class MapPage implements OnDestroy{
     if(this.primeraVez == 1){
       this.puedeVolar = true;
       this.ocultarTodasLasOpciones();
-      //this.obtenerZonasTemporales();
       this.obtenerZoTeIntersectada();
     }
   }
 
   ngOnDestroy():void { 
     //this.map.remove();
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -362,15 +370,23 @@ export class MapPage implements OnDestroy{
   }
 
   hideLoad(){
-    this.loading.dismiss().then(()=>{} ,
-    err => {});
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   alertMensaje(titulo, msg){
@@ -457,21 +473,6 @@ export class MapPage implements OnDestroy{
     });
   }
 
-  obtenerZonasTemporales(){
-    this.contadorLoad++;
-    this.zs.obtenerZonasTemporales(this.userProfile, "TODAS").subscribe(
-      res => {
-        //this.verificarZonas(res.response);
-        this.contadorLoad --;
-        if(this.contadorLoad == 0){
-            this.hideLoad();
-          }
-      },
-      err => {
-        this.errorZonas(err);
-      })
-  }
-
   goToBack(){
     this.navBar.backButtonClick = (e:UIEvent)=>{
       this.navCtrl.setRoot(HomePage);
@@ -529,10 +530,7 @@ export class MapPage implements OnDestroy{
   }
 
   verificarZonas(zonasRestingidas){
-    this.contadorLoad--;
-    if(this.contadorLoad == 0){
-      this.hideLoad();
-    }
+    this.hideLoad();
     
     if((zonasRestingidas.zonas_influencia.length > 0) || (zonasRestingidas.zonas_temporales.length > 0)){
       var zonasTemporales = this.zonasToGeoJson(zonasRestingidas.zonas_temporales);
@@ -540,13 +538,11 @@ export class MapPage implements OnDestroy{
       this.puedeVolar = false;
       this.addGeoJsonLayers(zonasInfluencia);
       this.addGeoJsonLayers(zonasTemporales);
-      if(this.contadorLoad == 0) {
-        this.positionMarker.bindPopup("No se puede volar en esta zona").openPopup();
-        this.ocultarTodasLasOpciones();
-        this.pedirExcepcionVuelo();
-      }
+      this.positionMarker.bindPopup("No se puede volar en esta zona").openPopup();
+      this.ocultarTodasLasOpciones();
+      this.pedirExcepcionVuelo();
     }
-    if((this.contadorLoad == 0) && (this.puedeVolar)){
+    if(this.puedeVolar){
       this.iniciarVuelo();
     }
   }
@@ -563,18 +559,13 @@ export class MapPage implements OnDestroy{
   }
 
   errorZonas(err){
-    this.contadorLoad--;
-    if(this.contadorLoad == 0)
-      this.hideLoad();
+    this.hideLoad();
     this.alertMensaje("Error", "Error al calcular las zonas");
   }
 
   iniciarVuelo(){
     var mapPage = this;
-    mapPage.mensajeEmpezarVuelo();/*
-    setTimeout(function(){ 
-      mapPage.mensajeEmpezarVuelo();
-    }, 1000);*/
+    mapPage.mensajeEmpezarVuelo();
   }
 
   mostrarOpcionesVuelo(){

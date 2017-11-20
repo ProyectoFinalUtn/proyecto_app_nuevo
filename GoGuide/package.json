@@ -1,8 +1,8 @@
 {
     "name": "GoGuide",
-    "version": "0.0.1",
-    "author": "Ionic Framework",
-    "homepage": "http://ionicframework.com/",
+    "version": "1.0.0",
+    "author": "GoGuide Team",
+    "homepage": "http://www.anac.gov.ar/",
     "private": true,
     "scripts": {
         "clean": "ionic-app-scripts clean",
@@ -51,7 +51,7 @@
         "@ionic/app-scripts": "3.1.2",
         "typescript": "2.4.2"
     },
-    "description": "An Ionic project",
+    "description": "Verifica donde volar tu VANT",
     "cordova": {
         "plugins": {
             "cordova-sqlite-storage": {},

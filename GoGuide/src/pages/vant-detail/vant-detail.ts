@@ -8,7 +8,6 @@ import { LoadingController } from 'ionic-angular';
 import { ConfigServiceProvider } from '../../providers/config-service/config-service';
 import { HomePage } from '../home/home';
 
-@IonicPage()
 @Component({
   selector: 'page-vant-detail',
   templateUrl: 'vant-detail.html',
@@ -21,10 +20,12 @@ export class VantDetailPage {
   userProfile: any;
   mensajeCrearVant: string;
   loading;
+  esperePorFavor: number;
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, 
               private up: PerfilProvider, private vs: VantServiceProvider, private camera: Camera, 
               public loadingCtrl: LoadingController, private cs: ConfigServiceProvider, private platform: Platform) {
+    this.esperePorFavor = 0;
     var vant = this.navParams.data.vant;
     this.vant = new Vant();
     this.userProfile = this.up.getUserProfile();
@@ -74,13 +75,13 @@ export class VantDetailPage {
         })
         .catch(error =>{
           this.hideLoad();
-          this.alertMensaje("Error", error.message);
+          this.errorWs(error);
         });
+      },
+      err => {
+        this.hideLoad();
+        this.errorWs(err);
       });
-    },
-    err => {
-      this.hideLoad();
-      this.alertMensaje("Error", err.message);
     });
   }
 
@@ -95,20 +96,16 @@ export class VantDetailPage {
         .then(response => {
           this.hideLoad();
           this.vs.updateVant(this.vant);
-          //alert("Vant modificado con exito.");
           this.alertVuelveAtras("Confirmación", "VANT modificado con éxito.");
         })
         .catch(error =>{
           this.hideLoad();
-          this.alertMensaje("Error", error.message);
+          this.errorWs(error);
         });
-        /*this.vs.updateVant(this.vant);
-        alert("Vant modificado con exito.");
-        this.volverAlListado();*/
       },
       err => {
         this.hideLoad();
-        this.alertMensaje("Error", err.message);
+        this.errorWs(err);
       });
     });
   } 
@@ -136,6 +133,9 @@ export class VantDetailPage {
         {
           text: 'Sí',
           handler: () => {
+            if(this.esperePorFavor > 0){
+              this.hideLoad();
+            }
             this.volverAlListado();
           }
         }
@@ -160,9 +160,21 @@ export class VantDetailPage {
       },
       err => {
         this.hideLoad();
-        this.alertVuelveAtras("Error", err.message);
+        this.errorWsVuelveAtras(err);
       });
     });
+  }
+
+  errorWsVuelveAtras(err){
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
+      this.alertVuelveAtras("Error", err.message)
+    }
+    else{
+      this.alertVuelveAtras("Error", "Verifique su conexión a internet");
+    }
   }
 
   alertMensaje(titulo, msg){
@@ -243,6 +255,10 @@ export class VantDetailPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -253,14 +269,23 @@ export class VantDetailPage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   backButton(){

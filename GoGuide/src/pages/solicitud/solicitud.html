@@ -39,11 +39,11 @@
         </ion-item>
         <ion-item>
           <ion-label floating>Hora desde</ion-label>
-          <ion-datetime displayFormat="HH:mm" pickerFormat="HH mm" cancelText="No" doneText="Si" clearInput="true" [(ngModel)]="solicitud.horaVueloDesde"></ion-datetime>
+          <ion-datetime *ngIf="solicitud.horaVueloDesde" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="No" doneText="Si" clearInput="true" [(ngModel)]="solicitud.horaVueloDesde"></ion-datetime>
         </ion-item>
         <ion-item>
           <ion-label floating>Hora hasta</ion-label>
-          <ion-datetime displayFormat="HH:mm" pickerFormat="HH mm" cancelText="No" doneText="Si" clearInput="true" [(ngModel)]="solicitud.horaVueloHasta"></ion-datetime>
+          <ion-datetime *ngIf="solicitud.horaVueloHasta" displayFormat="HH:mm" pickerFormat="HH:mm" cancelText="No" doneText="Si" clearInput="true" [(ngModel)]="solicitud.horaVueloHasta"></ion-datetime>
         </ion-item>
         <ion-item>
           <ion-label floating>Vants</ion-label>

@@ -14,7 +14,6 @@ const GEOLOCATION_OPTIONS: GeolocationOptions = {
    maximumAge: 3000, timeout: 5000, enableHighAccuracy: true
 };
 
-@IonicPage()
 @Component({
   selector: 'page-solicitud',
   templateUrl: 'solicitud.html',
@@ -37,6 +36,7 @@ export class SolicitudPage {
   vantsUsuario: Array<Vant>;
   loading;
   click: number;
+  esperePorFavor: number;
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
@@ -48,7 +48,7 @@ export class SolicitudPage {
               private vs: VantServiceProvider, 
               public loadingCtrl: LoadingController, 
               private cs: ConfigServiceProvider, private platform: Platform) {
-    
+    this.esperePorFavor = 0;
     this.vantsUsuario = new Array<Vant>();
     this.userProfile = this.up.getUserProfile();
     this.solicitud = this.navParams.data.solicitud;   
@@ -152,7 +152,7 @@ export class SolicitudPage {
             this.map.setView(latlng, zoom);
           }
           mapPage.click = 0;
-        }, 1300);
+        }, 700);
       }
     });
   }
@@ -206,6 +206,7 @@ export class SolicitudPage {
           this.map.setView(latlng, this.defaultZoom);
         else
           this.map.setView(latlng, this.map.getZoom());
+        this.stopFollow();
       }
     }
   }
@@ -262,7 +263,7 @@ export class SolicitudPage {
       },
       err => {
         this.hideLoad();
-        this.alertMensaje("Error", err.message);
+        this.errorWs(err);
       });
     });
   }
@@ -278,7 +279,7 @@ export class SolicitudPage {
       },
       err => {
         this.hideLoad();
-        this.alertMensaje("Error", err.message);
+        this.errorWs(err);
       });
     });
   }
@@ -292,6 +293,10 @@ export class SolicitudPage {
       this.obtenerVantsUsuario();
       this.guardarModificar = 'Guardar';      
       this.solicitud.idSolicitud = 0;
+      var fechaActual = new Date();
+      this.solicitud.fecha = fechaActual.toISOString();
+      this.solicitud.horaVueloDesde = fechaActual.getHours().toString() + ":" + fechaActual.getMinutes().toString();
+      this.solicitud.horaVueloHasta = fechaActual.getHours().toString() + ":" + (fechaActual.getMinutes() + 1).toString();
       if((this.navParams.data.lat == undefined) ||(this.navParams.data.lon == undefined)){
         this.solicitud.latitud = -34.60389;
         this.solicitud.longitud = -58.37056;
@@ -317,7 +322,7 @@ export class SolicitudPage {
       },
       err => {
         this.hideLoad();
-        this.alertMensaje("Error", err.message);
+        this.errorWs(err);
       });
     }); 
   }
@@ -345,6 +350,9 @@ export class SolicitudPage {
         {
           text: 'Sí',
           handler: () => {
+            if(this.esperePorFavor > 0){
+              this.hideLoad();
+            }
             this.volverAlListado();
           }
         }
@@ -388,6 +396,11 @@ export class SolicitudPage {
     if((this.solicitud.horaVueloDesde == null) || (this.solicitud.horaVueloDesde.trim() == "")){
       this.mensajeCrearSolicitud += "El campo hora de vuelo desde no puede estar vacío.</br>";
       valido = false;
+    }else{
+      if(!this.horasValidas()){
+        this.mensajeCrearSolicitud += "El campo hora de vuelo desde debe ser mayor que hora de vuelo hasta.</br>";
+        valido = false;
+      }
     }
 
     if((this.solicitud.horaVueloHasta == null) || (this.solicitud.horaVueloHasta.trim() == "")){
@@ -396,6 +409,26 @@ export class SolicitudPage {
     }
 
     return valido;
+  }
+
+  horasValidas(){
+    if((this.solicitud.horaVueloDesde.length < 5) || (this.solicitud.horaVueloHasta.length < 5)){
+      return false;
+    }
+    var horaDesde = this.solicitud.horaVueloDesde.substring(0, 2);
+    var minutosDesde = this.solicitud.horaVueloDesde.substring(3, 5);
+    var horaHasta = this.solicitud.horaVueloHasta.substring(0, 2);
+    var minutosHasta = this.solicitud.horaVueloHasta.substring(3, 5);
+    if(horaDesde > horaHasta){
+      return false;
+    }
+
+    if(horaDesde == horaHasta){
+      if(minutosDesde > minutosHasta){
+        return false;
+      }
+    }
+    return true;
   }
 
   cambiarRadio(){
@@ -412,20 +445,37 @@ export class SolicitudPage {
           this.hideLoad();
           this.vantsUsuario = res.response;
         }else{
-          this.errorWs(res);
+          this.errorWsVuelveAtras(res);
         }       
       },
       err => {
-        this.errorWs(err);        
+        this.errorWsVuelveAtras(err);        
       });
     });
   }
 
-  errorWs(err){
-    if(err.message != undefined)
+  errorWsVuelveAtras(err){
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertVuelveAtras("Error", err.message)
-    else
+    }
+    else{
       this.alertVuelveAtras("Error", "Verifique su conexión a internet");
+    }
+  }
+
+  errorWs(err){
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
+      this.alertMensaje("Error", err.message);
+    }
+    else{
+      this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   generaSolicitudVacia(){
@@ -435,10 +485,8 @@ export class SolicitudPage {
     this.solicitud.latitud = 0;
     this.solicitud.longitud = 0;
     this.solicitud.vants = new Array<Vant>();
-    this.solicitud.fecha = "2017-01-01"
     var fechaActual = new Date();
     this.solicitud.fecha = fechaActual.toISOString();
-    //cthis.solicitud.fecha = fechaActual.getFullYear().toString() + "-" + fechaActual.getMonth().toString()+ "-" + fechaActual.getDay().toString();
     this.solicitud.horaVueloDesde = fechaActual.getHours().toString() + ":" + fechaActual.getMinutes().toString();
     this.solicitud.horaVueloHasta = fechaActual.getHours().toString() + ":" + (fechaActual.getMinutes() + 1).toString();
   }
@@ -460,6 +508,10 @@ export class SolicitudPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -470,9 +522,11 @@ export class SolicitudPage {
   }
 
   hideLoad(){
-    var loading = this.loading;
-    this.loading.dismiss().then(()=>{} ,
-    err => {});
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   elegido(vantBuscado){

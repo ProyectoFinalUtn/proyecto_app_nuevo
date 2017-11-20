@@ -8,7 +8,6 @@ import { PerfilProvider} from '../../providers/perfil/perfil';
 import { PerfilDetallePage } from '../perfil-detalle/perfil-detalle';
 import { HomePage } from '../home/home';
 
-@IonicPage()
 @Component({
   selector: 'page-perfil',
   templateUrl: 'perfil.html',
@@ -18,28 +17,24 @@ export class PerfilPage {
   panelRegistracion: boolean;
   estaLogueado: boolean;
   imageSrc: string;
-  provincias: Array<string>;
   users: Array<any>;
   usuario: string;
   pass: string;
   loading;
+  esperePorFavor: number;
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController,
               public us: UsuarioServiceProvider, public db: DbProvider, public up: PerfilProvider, 
               public loadingCtrl: LoadingController, private platform: Platform) {    
+    this.esperePorFavor = 0;
   }
 
   ionViewDidLoad() {
     this.goToBack();
     this.panelRegistracion = false;
-    this.setProvincias();    
     this.estaLogueado = this.up.estaLogueado();
   }
-
-  setProvincias() {
-    this.provincias = ['Buenos aires', 'Capital', 'Chaco', 'Cordoba'];
-  }  
 
   mostrarPanelRegistracion(event) {
     this.panelRegistracion = !this.panelRegistracion;
@@ -93,7 +88,7 @@ export class PerfilPage {
           this.actualizaUpAndGoToDetalle();
         }).catch(error =>{
           this.hideLoad();
-          this.alertMensaje("Error", error);
+          this.errorWs(error);
         });
       }else{
         this.up.guardarPerfil(userProfile)
@@ -101,7 +96,7 @@ export class PerfilPage {
           this.actualizaUpAndGoToDetalle();
         }).catch(error =>{
           this.hideLoad();
-          this.alertMensaje("Error", error);
+          this.errorWs(error);
         });
       }
     });
@@ -118,6 +113,10 @@ export class PerfilPage {
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -128,7 +127,11 @@ export class PerfilPage {
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   alertMensaje(titulo, msg){
@@ -141,19 +144,27 @@ export class PerfilPage {
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   goToBack(){
-    this.navBar.backButtonClick = (e:UIEvent)=>{
-      this.navCtrl.setRoot(HomePage);
-    }
-
     this.platform.registerBackButtonAction(() => {
-        this.navCtrl.setRoot(HomePage);
+      this.goToHome();
     });
+  }
+
+  goToHome(){
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.navCtrl.setRoot(HomePage);
   }
 }

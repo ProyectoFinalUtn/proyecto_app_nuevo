@@ -52,8 +52,8 @@ import { Facebook } from '@ionic-native/facebook';
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     IonicModule.forRoot(GoGuide),
-    HttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

@@ -8,7 +8,6 @@ import { PerfilProvider} from '../../providers/perfil/perfil';
 import { PerfilDetallePage } from '../perfil-detalle/perfil-detalle';
 import { LoadingController } from 'ionic-angular';
 
-@IonicPage()
 @Component({
   selector: 'page-crear-perfil',
   templateUrl: 'crear-perfil.html',
@@ -25,14 +24,15 @@ export class CrearPerfilPage{
   loading;
   provincias: Array<any>;
   localidades: Array<any>;
+  esperePorFavor: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, 
               public loadingCtrl: LoadingController, private camera: Camera, public us: UsuarioServiceProvider, 
               public up: PerfilProvider, public db: DbProvider, private ds: DireccionServiceProvider, private platform: Platform) {
-    
+    this.esperePorFavor = 0;
     this.userProfile = this.up.getUserProfile();
     this.provincias = new Array<any>();
-    this.localidades = new Array<any>();
+    this.localidades = new Array<any>();    
   }
 
   ionViewDidLoad() {
@@ -143,6 +143,9 @@ export class CrearPerfilPage{
         {
           text: 'Sí',
           handler: () => {
+            if(this.esperePorFavor > 0){
+              this.hideLoad();
+            }
             this.irAlDetalle();
           }
         }
@@ -232,7 +235,7 @@ export class CrearPerfilPage{
         })
         .catch(error =>{
           this.hideLoad();
-          this.alertPerfil("Error", error.message);
+          this.errorWs(error);
         });
       },
       err => {
@@ -257,8 +260,7 @@ export class CrearPerfilPage{
         })
         .catch(error =>{
           this.hideLoad();
-          this.alertPerfil("Error", error.message);
-          
+          this.errorWs(error);
         });
       },
       err => {
@@ -275,6 +277,10 @@ export class CrearPerfilPage{
   }
 
   showLoad() {
+    if(this.esperePorFavor > 0){
+      this.hideLoad();
+    }
+    this.esperePorFavor++;
     this.loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: 'Espere por favor.',
@@ -285,14 +291,23 @@ export class CrearPerfilPage{
   }
 
   hideLoad(){
-    this.loading.dismiss();
+    if(this.esperePorFavor != 0){      
+      this.esperePorFavor = 0;
+      this.loading.dismiss().then(()=>{} ,
+      err => {});
+    }
   }
 
   errorWs(err){
-    if(err.message != undefined)
+    if((err.message != undefined) && (err.message != null)){
+      if(err.message.toLowerCase().includes("json")){
+        err.message = "Verifique su conexión a internet";
+      }
       this.alertMensaje("Error", err.message);
-    else
+    }
+    else{
       this.alertMensaje("Error", "Verifique su conexión a internet");
+    }
   }
 
   backButton(){
